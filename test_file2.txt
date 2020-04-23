@@ -3,3 +3,5 @@ hi
 Ahoj Maciej, jak se mas?
 
 Cześć Krzysiu!
+
+Man kann git direkt in PyCharm integriert haben... eigentlich scheint es mir ziemlich gut zu sein...
