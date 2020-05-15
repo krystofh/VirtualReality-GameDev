@@ -5,7 +5,7 @@ import cv2 as cv
 import numpy as np
 
 # ------------- SETUP variables  ----------------------
-CAMERA_ID = 1  # Index of the camera. Start with 0 and use higher if more camera devices available
+CAMERA_ID = 0  # Index of the camera. Start with 0 and use higher if more camera devices available
 
 # ------------- CODE ----------------------------------
 # Create a VideoCapture object, the interface to communicate with the camera

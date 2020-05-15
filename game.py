@@ -39,15 +39,14 @@ def move_player(number, x, y):          # player-number (1 or 2), pos-x, pos-y
 def initialize_game():
     screen.fill(ct.WINDOW_BG_COLOR)  # screen background
     # Draw pong paddles
-    pygame.draw.rect(screen, ct.RED, (ct.PONG_BAR_WALL_PADDING, ct.WINDOW_HEIGHT / 2 - ct.PONG_BAR_HEIGHT / 2, ct.PONG_BAR_WIDTH, ct.PONG_BAR_HEIGHT))  # upper-left corner as position ref
-    pygame.draw.rect(screen, ct.BLUE, (ct.WINDOW_WIDTH - ct.PONG_BAR_WALL_PADDING - ct.PONG_BAR_WIDTH, ct.WINDOW_HEIGHT / 2 - ct.PONG_BAR_HEIGHT / 2, ct.PONG_BAR_WIDTH, ct.PONG_BAR_HEIGHT))
+    move_player(1, ct.PONG_BAR_WALL_PADDING, ct.WINDOW_HEIGHT / 2 - ct.PONG_BAR_HEIGHT / 2)
+    move_player(2, ct.WINDOW_WIDTH - ct.PONG_BAR_WALL_PADDING - ct.PONG_BAR_WIDTH, ct.WINDOW_HEIGHT / 2 - ct.PONG_BAR_HEIGHT / 2)
     pygame.display.update()  # refresh screen
 
 initialize_game()                       # Initialize game graphics such as background and players
 
 # Game loop
 running = True
-lastKey = ''
 while running:
     screen.fill(ct.WINDOW_BG_COLOR)  # screen background
 
@@ -56,17 +55,15 @@ while running:
             running = False             # stop the program by exiting the loop
 
         if event.type == pygame.KEYDOWN:  # Key pressed
+            if event.key == pygame.K_ESCAPE:
+                running = False
             if event.key == pygame.K_w:                 # W-Key
-                lastKey = 'w'
                 player1_move_step = -0.6
             elif event.key == pygame.K_s:               # S-Key
-                lastKey = 's'
                 player1_move_step = 0.6
             elif event.key == pygame.K_UP:              # Up
-                lastKey = 'up'
                 player2_move_step = -0.6
             elif event.key == pygame.K_DOWN:            # Down
-                lastKey = 'down'
                 player2_move_step = 0.6
 
         if event.type == pygame.KEYUP:
@@ -79,4 +76,5 @@ while running:
     player2_y += player2_move_step
     move_player(1, player1_x, player1_y)
     move_player(2, player2_x, player2_y)
+
     pygame.display.update()             # refresh screen
