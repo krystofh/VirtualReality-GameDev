@@ -11,3 +11,4 @@ PONG_BAR_WALL_PADDING = 40  # Distance of the paddle from the wall
 PLAYER_SPEED = 1.7    # move_step speed for the paddle
 BALL_RADIUS = 13
 BALL_DIAMETER = 2*BALL_RADIUS          # Pong ball diameter
+BALL_SPEED = 2        # ball's speed

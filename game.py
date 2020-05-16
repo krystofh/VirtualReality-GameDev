@@ -118,6 +118,12 @@ while running:
             elif event.key == pygame.K_DOWN:            # Down
                 player2_move_step = ct.PLAYER_SPEED
 
+            # Start ball
+            if (event.key == pygame.K_w or event.key == pygame.K_s) and ball.start_player == 1:
+                ball.velocity = [2, -2]   # start ball movement
+            elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
+                ball.velocity = [-2, -2] # start ball movement
+
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w or event.key == pygame.K_s:   # Key released
                 player1_move_step = 0                  # stop player 1
@@ -127,6 +133,9 @@ while running:
     # Add a move step to the positions
     player1.position[1] += player1_move_step
     player2.position[1] += player2_move_step
+    # Ball movement
+    ball.position[0] += ball.velocity[0]
+    ball.position[1] += ball.velocity[1]
 
     # Refresh positions
     move_player(player1, player1.position[0], player1.position[1])
