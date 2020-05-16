@@ -54,6 +54,9 @@ def move_ball(x, y):
     global ball
     # Save new position
     ball.position = [x, y]
+    # Keep ball inside the window
+    ball.position[1] = max(0 + ball.radius, ball.position[1])
+    ball.position[1] = min(ct.WINDOW_HEIGHT - ball.radius, ball.position[1])
     # Render (uses ball's center)
     pygame.draw.circle(screen, (200, 200, 200), ball.position, ball.radius)
 
