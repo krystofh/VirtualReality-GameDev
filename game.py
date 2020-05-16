@@ -4,6 +4,7 @@
 # Based on freeCodeCamp.org pygame tutorial from: https://www.youtube.com/watch?v=FfWpgLFMI7w
 
 import pygame
+import random
 import constants as ct
 from Player import Player
 from Ball import Ball
@@ -63,11 +64,22 @@ def move_ball(x, y):
 # Initialize game graphics such as background and players
 def initialize_game():
     global player1, player2, ball
-    screen.fill(ct.WINDOW_BG_COLOR)  # screen background
+    global player1_x_start, player1_y_start, player2_x_start, player1_y_start
 
-    # Draw players (pong paddles) - positions already set up by object instantatiation
+    screen.fill(ct.WINDOW_BG_COLOR)  # screen background
+    # Reset players' positions
+    player1.position = [player1_x_start, player1_y_start]
+    player2.position = [player2_x_start, player2_y_start]
+    # Draw players (pong paddles)
     move_player(player1, player1.position[0], player1.position[1])
     move_player(player2, player2.position[0], player2.position[1])
+
+    # Random start player
+    ball.start_player = random.randint(1, 2)
+    # Reset n_turns (player's hit counter)
+    ball.n_turns = 0
+    # Set velocity to 0
+    ball.velocity = [0, 0]
 
     # Draw ball object
     ball_x = 0
@@ -94,9 +106,11 @@ def check_goal():
     if ball.position[0] == ball.radius:    # player 2 scored (left field border reached)
         print("Player 2 scored")
         player2.score += 1   # update player's score
-    if ball.position[0] == ct.WINDOW_WIDTH - ball.radius:  # player 1 scored (right border reached)
+        initialize_game()
+    elif ball.position[0] == ct.WINDOW_WIDTH - ball.radius:  # player 1 scored (right border reached)
         print("Player 1 scored")
         player1.score += 1    # update player's score
+        initialize_game()
 
 # Display players' score
 def display_score():
@@ -134,8 +148,10 @@ while running:
             # Start ball
             if (event.key == pygame.K_w or event.key == pygame.K_s) and ball.start_player == 1:
                 ball.velocity = [2, -2]   # start ball movement
+                ball.n_turns += 1         # hit counter
             elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
                 ball.velocity = [-2, -2] # start ball movement
+                ball.n_turns += 1  # hit counter
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w or event.key == pygame.K_s:   # Key released
