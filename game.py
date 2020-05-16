@@ -88,6 +88,16 @@ def initialize_game():
     display_score()
     pygame.display.update()  # refresh screen
 
+# Check goal
+def check_goal():
+    global player1, player2, ball
+    if ball.position[0] == ball.radius:    # player 2 scored (left field border reached)
+        print("Player 2 scored")
+        player2.score += 1   # update player's score
+    if ball.position[0] == ct.WINDOW_WIDTH - ball.radius:  # player 1 scored (right border reached)
+        print("Player 1 scored")
+        player1.score += 1    # update player's score
+
 # Display players' score
 def display_score():
     global player1, player2
@@ -144,6 +154,9 @@ while running:
     move_player(player1, player1.position[0], player1.position[1])
     move_player(player2, player2.position[0], player2.position[1])
     move_ball(ball.position[0], ball.position[1])
+
+    # Check events
+    check_goal()
 
     # Score and screen update
     display_score()
