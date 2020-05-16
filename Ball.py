@@ -18,4 +18,4 @@ class Ball:
     # Transform ball center position to GUI ball coordinates (UL-corner) and return them
     # For rendering purposes
     def get_corner_position(self):
-        return (self.position[0] - self.radius , self.position[1] - self.radius)
+        return [self.position[0] - self.radius , self.position[1] - self.radius]

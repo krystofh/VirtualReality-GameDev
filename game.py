@@ -18,12 +18,12 @@ icon = pygame.image.load('graphics/pong-icon.png')   # game icon, 32x32 png
 pygame.display.set_icon(icon)
 
 # Create players
-player1_x = ct.PONG_BAR_WALL_PADDING                # start position
-player1_y = int(ct.WINDOW_HEIGHT/2)
-player2_x = ct.WINDOW_WIDTH - ct.PONG_BAR_WALL_PADDING
-player2_y = player1_y
-player1 = Player("Krystof", 1, (player1_x, player1_y))  # Create players objects with initial position (paddle's center)
-player2 = Player("Maciej", 2, (player2_x, player2_y))
+player1_x_start = ct.PONG_BAR_WALL_PADDING                # start position
+player1_y_start = int(ct.WINDOW_HEIGHT/2)
+player2_x_start = ct.WINDOW_WIDTH - ct.PONG_BAR_WALL_PADDING
+player2_y_start = player1_y_start
+player1 = Player("Krystof", 1, (player1_x_start, player1_y_start))  # Create players objects with initial position (paddle's center)
+player2 = Player("Maciej", 2, (player2_x_start, player2_y_start))
 player1_move_step = 0                                # move velocity - ONLY FOR KEYBOARD
 player2_move_step = 0
 
@@ -33,11 +33,15 @@ ball = Ball(ct.BALL_RADIUS)             # create a ball of defined radius
 
 # Draw player's paddle on a new position
 def move_player(player, x, y):          # player object, pos-x, pos-y
+    # Save new position and get its UL corner coordinates
     player.position = [x, y]            # save player's new position (paddle's center)
     corner_position = player.get_corner_position()      # get UL corner coords
+
+    # Keep players inside the window
     corner_position[1] = max(0, corner_position[1])     # make sure y stays above 0 (screen boundary)
     corner_position[1] = min(corner_position[1], ct.WINDOW_HEIGHT-ct.PONG_BAR_HEIGHT)  # make sure it does not got too much down
 
+    # Render players
     if player.number == 1:     # red player
         pygame.draw.rect(screen, ct.RED, (corner_position[0],corner_position[1], ct.PONG_BAR_WIDTH, ct.PONG_BAR_HEIGHT))
     elif player.number == 2:   # blue player
@@ -45,18 +49,39 @@ def move_player(player, x, y):          # player object, pos-x, pos-y
     else:
         print("Error move_player!")
 
+# Draw ball on a new position
 def move_ball(x, y):
-    pygame.draw.circle(screen, (200, 200, 200), (x, y), ct.BALL_RADIUS)
-
+    global ball
+    # Save new position
+    ball.position = [x, y]
+    # Render (uses ball's center)
+    pygame.draw.circle(screen, (200, 200, 200), ball.position, ball.radius)
 
 # Initialize game graphics such as background and players
 def initialize_game():
-    global player1, player2
+    global player1, player2, ball
     screen.fill(ct.WINDOW_BG_COLOR)  # screen background
-    # Draw pong paddles
+
+    # Draw players (pong paddles) - positions already set up by object instantatiation
     move_player(player1, player1.position[0], player1.position[1])
     move_player(player2, player2.position[0], player2.position[1])
-    move_ball(100, 100)
+
+    # Draw ball object
+    ball_x = 0
+    ball_y = 0
+    if ball.start_player == 1:
+        print("Player 1 starts")
+        ball_x = player1.position[0] + int(ct.PONG_BAR_WIDTH/2) + ball.radius
+        ball_y = player1.position[1]
+    elif ball.start_player == 2:
+        print("Player 2 starts")
+        ball_x = player2.position[0] - int(ct.PONG_BAR_WIDTH / 2) - ball.radius
+        ball_y = player2.position[1]
+    else:
+        print("Error drawing ball on start position")
+    move_ball(ball_x, ball_y)
+
+    # Display score
     display_score()
     pygame.display.update()  # refresh screen
 
@@ -99,10 +124,15 @@ while running:
             if event.key == pygame.K_UP or event.key == pygame.K_DOWN:
                 player2_move_step = 0                  # stop player 2
 
-    player1_y += player1_move_step
-    player2_y += player2_move_step
-    move_player(player1, player1_x, player1_y)
-    move_player(player2, player2_x, player2_y)
-    move_ball(100, 100)
+    # Add a move step to the positions
+    player1.position[1] += player1_move_step
+    player2.position[1] += player2_move_step
+
+    # Refresh positions
+    move_player(player1, player1.position[0], player1.position[1])
+    move_player(player2, player2.position[0], player2.position[1])
+    move_ball(ball.position[0], ball.position[1])
+
+    # Score and screen update
     display_score()
     pygame.display.update()             # refresh screen
