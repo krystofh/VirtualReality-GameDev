@@ -5,6 +5,7 @@
 
 import pygame
 import random
+import math
 import constants as ct
 from Player import Player
 from Ball import Ball
@@ -123,6 +124,27 @@ def check_bounce():
         # ball center at the top or bottom window edge
         ball.velocity[1] = ball.velocity[1] * (-1)   # revert vy sign
 
+# Check paddle's hit
+def check_hit():
+    global player1, player2, ball
+    dmax = math.sqrt((ball.radius + int(ct.PONG_BAR_WIDTH/2))**2 + (ball.radius + int(ct.PONG_BAR_HEIGHT/2))**2)
+    players = (player1, player2)
+    if not ball.n_turns == 0:
+        # Check if player 1
+        for player in players:
+            if abs(ball.position[0] - player.position[0]) == (ball.radius + int(ct.PONG_BAR_WIDTH/2)) and \
+            math.sqrt((ball.position[0] - player.position[0])**2 + (ball.position[1] - player.position[1])**2) <= dmax:
+                print("Player {} hit!".format(player.number))
+                ball.velocity[0] = ball.velocity[0] * (-1) # revert vx sign to bounce off
+                ball.n_turns += 1
+
+
+    """
+    for player in players:
+        if abs(ball.position[0] - player.position[0]) == (ball.radius + int(ct.PONG_BAR_WIDTH/2)) and \
+            math.sqrt((ball.position[0] - player.position[0])**2 + (ball.position[1] - player.position[1])**2):
+            ball.velocity[0] = ball.velocity[0] * (-1) # revert vx sign to bounce off
+    """
 # Display players' score
 def display_score():
     global player1, player2
@@ -156,13 +178,14 @@ while running:
             elif event.key == pygame.K_DOWN:            # Down
                 player2_move_step = ct.PLAYER_SPEED
 
-            # Start ball
-            if (event.key == pygame.K_w or event.key == pygame.K_s) and ball.start_player == 1:
-                ball.velocity = [2, -2]   # start ball movement
-                ball.n_turns += 1         # hit counter
-            elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
-                ball.velocity = [-2, 2] # start ball movement
-                ball.n_turns += 1  # hit counter
+            # Start ball (kick off)
+            if ball.n_turns == 0:
+                if (event.key == pygame.K_w or event.key == pygame.K_s) and ball.start_player == 1:
+                    ball.velocity = [2, -2]   # start ball movement
+                    ball.n_turns += 1         # hit counter
+                elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
+                    ball.velocity = [-2, 2] # start ball movement
+                    ball.n_turns += 1  # hit counter
 
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w or event.key == pygame.K_s:   # Key released
@@ -185,6 +208,7 @@ while running:
     # Check events
     check_goal()
     check_bounce()
+    check_hit()
 
     # Score and screen update
     display_score()
