@@ -116,6 +116,13 @@ def check_goal():
         player1.score += 1    # update player's score
         initialize_game()
 
+# Check bounce from a wall
+def check_bounce():
+    global ball
+    if ball.position[1] == ball.radius or ball.position[1] == (ct.WINDOW_HEIGHT - ball.radius):
+        # ball center at the top or bottom window edge
+        ball.velocity[1] = ball.velocity[1] * (-1)   # revert vy sign
+
 # Display players' score
 def display_score():
     global player1, player2
@@ -154,7 +161,7 @@ while running:
                 ball.velocity = [2, -2]   # start ball movement
                 ball.n_turns += 1         # hit counter
             elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
-                ball.velocity = [-2, -2] # start ball movement
+                ball.velocity = [-2, 2] # start ball movement
                 ball.n_turns += 1  # hit counter
 
         if event.type == pygame.KEYUP:
@@ -177,6 +184,7 @@ while running:
 
     # Check events
     check_goal()
+    check_bounce()
 
     # Score and screen update
     display_score()
