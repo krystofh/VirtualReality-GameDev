@@ -138,13 +138,27 @@ def check_hit():
                 ball.velocity[0] = ball.velocity[0] * (-1) # revert vx sign to bounce off
                 ball.n_turns += 1
 
+# Kick-off
+def kickoff(player_n, direction):   # player number, direction "up"/"down"
+    global ball, player1, player2
+    factor = random.uniform(0.45, 0.55)  # random factor for velocity generation
+    ball.n_turns += 1  # hit counter
 
-    """
-    for player in players:
-        if abs(ball.position[0] - player.position[0]) == (ball.radius + int(ct.PONG_BAR_WIDTH/2)) and \
-            math.sqrt((ball.position[0] - player.position[0])**2 + (ball.position[1] - player.position[1])**2):
-            ball.velocity[0] = ball.velocity[0] * (-1) # revert vx sign to bounce off
-    """
+    if direction == "up":
+        ball.velocity[1] = factor * ct.BALL_SPEED
+    elif direction == "down":
+        ball.velocity[1] = - factor * ct.BALL_SPEED
+    else:
+        print("Error kicking off")
+
+    if player_n == 1:
+        ball.velocity[0] = (1 - factor) * ct.BALL_SPEED
+    elif player_n == 2:
+        ball.velocity[0] = - (1 - factor) * ct.BALL_SPEED
+    else:
+        print("Error kicking off")
+    print("Ball velocity: {},{}".format(ball.velocity[0], ball.velocity[1]))
+
 # Display players' score
 def display_score():
     global player1, player2
@@ -180,13 +194,25 @@ while running:
 
             # Start ball (kick off)
             if ball.n_turns == 0:
-                if (event.key == pygame.K_w or event.key == pygame.K_s) and ball.start_player == 1:
-                    ball.velocity = [2, -2]   # start ball movement
-                    ball.n_turns += 1         # hit counter
-                elif (event.key == pygame.K_UP or event.key == pygame.K_DOWN) and ball.start_player == 2:
-                    ball.velocity = [-2, 2] # start ball movement
-                    ball.n_turns += 1  # hit counter
-
+                if ball.start_player == 1:
+                    if event.key == pygame.K_w:
+                        ball.velocity[0] = ct.BALL_SPEED
+                        ball.velocity[1] = -ct.BALL_SPEED
+                        #kickoff(1, "up")
+                    elif event.key == pygame.K_s:
+                        ball.velocity[0] = ct.BALL_SPEED
+                        ball.velocity[1] = ct.BALL_SPEED
+                        #kickoff(1, "down")
+                elif ball.start_player == 2:
+                    if event.key == pygame.K_UP:
+                        ball.velocity[0] = -ct.BALL_SPEED
+                        ball.velocity[1] = -ct.BALL_SPEED
+                        #kickoff(2, "up")
+                    elif event.key == pygame.K_DOWN:
+                        ball.velocity[0] = -ct.BALL_SPEED
+                        ball.velocity[1] = ct.BALL_SPEED
+                        #kickoff(2, "down")
+                ball.n_turns += 1
         if event.type == pygame.KEYUP:
             if event.key == pygame.K_w or event.key == pygame.K_s:   # Key released
                 player1_move_step = 0                  # stop player 1
@@ -197,8 +223,8 @@ while running:
     player1.position[1] += player1_move_step
     player2.position[1] += player2_move_step
     # Ball movement
-    ball.position[0] += ball.velocity[0]
-    ball.position[1] += ball.velocity[1]
+    ball.position[0] = int(ball.position[0] + ball.velocity[0])
+    ball.position[1] = int(ball.position[1] + ball.velocity[1])
 
     # Refresh positions
     move_player(player1, player1.position[0], player1.position[1])
