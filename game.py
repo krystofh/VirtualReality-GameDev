@@ -75,7 +75,11 @@ def initialize_game():
     move_player(player2, player2.position[0], player2.position[1])
 
     # Random start player
-    ball.start_player = random.randint(1, 2)
+    if ball.start_player == 1:
+        ball.start_player = 2
+    else:
+        ball.start_player = 1
+    #                ball.start_player = random.randint(1, 2)
     # Reset n_turns (player's hit counter)
     ball.n_turns = 0
     # Set velocity to 0
