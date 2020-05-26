@@ -2,8 +2,8 @@
 
 # "Pong icon made by Freepik from www.flaticon.com"
 # Based on freeCodeCamp.org pygame tutorial from: https://www.youtube.com/watch?v=FfWpgLFMI7w
-
 import pygame
+from pygame import mixer
 import random
 import math
 import constants as ct
@@ -32,6 +32,10 @@ player2_move_step = 0
 # Create a ball
 ball = Ball(ct.BALL_RADIUS)             # create a ball of defined radius
 
+# Load sounds
+mixer.pre_init()
+mixer.init(size = -8, channels=1, buffer = 512)
+bounce_sound = mixer.Sound("sounds/bounce.wav")
 
 # Draw player's paddle on a new position
 def move_player(player, x, y):          # player object, pos-x, pos-y
@@ -109,31 +113,42 @@ def initialize_game():
 def check_goal():
     global player1, player2, ball
     if ball.position[0] == ball.radius:    # player 2 scored (left field border reached)
+        # Play goal sound
+        goal_sound = mixer.Sound("sounds/goal.wav")
+        goal_sound.play()
         print("Player 2 scored")
         player2.score += 1   # update player's score
         initialize_game()
     elif ball.position[0] == ct.WINDOW_WIDTH - ball.radius:  # player 1 scored (right border reached)
+        # Play goal sound
+        goal_sound = mixer.Sound("sounds/goal.wav")
+        goal_sound.play()
         print("Player 1 scored")
         player1.score += 1    # update player's score
         initialize_game()
 
 # Check bounce from a wall
 def check_bounce():
-    global ball
+    global ball, bounce_sound
     if ball.position[1] == ball.radius or ball.position[1] == (ct.WINDOW_HEIGHT - ball.radius):
-        # ball center at the top or bottom window edge
+        # Bounce sound
+        bounce_sound.play()
+        # Change velocity: ball center at the top or bottom window edge
         ball.velocity[1] = ball.velocity[1] * (-1)   # revert vy sign
+
 
 # Check paddle's hit
 def check_hit():
-    global player1, player2, ball
+    global player1, player2, ball, bounce_sound
     dmax = math.sqrt((ball.radius + int(ct.PONG_BAR_WIDTH/2))**2 + (ball.radius + int(ct.PONG_BAR_HEIGHT/2))**2)
     players = (player1, player2)
     if not ball.n_turns == 0:
-        # Check if player 1
+        # Check if player hit
         for player in players:
             if abs(ball.position[0] - player.position[0]) == (ball.radius + int(ct.PONG_BAR_WIDTH/2)) and \
             math.sqrt((ball.position[0] - player.position[0])**2 + (ball.position[1] - player.position[1])**2) <= dmax:
+                # Bounce sound
+                bounce_sound.play()
                 print("Player {} hit!".format(player.number))
                 ball.velocity[0] = ball.velocity[0] * (-1) # revert vx sign to bounce off
                 ball.n_turns += 1
